@@ -14,28 +14,21 @@
 #define SW3 10 // Define pin del pulsante 3
 #define SW4 11 // Define pin del pulsante 4
 
-// Definición de la estructura LED
-typedef struct {
-    int pin;
-    int estado;
-} LED;
-
 // Definición de la estructura Secuencia
 typedef struct {
-    LED* leds;
+    int* pins;
+    int* estados;
     int numLeds;
     int* secuencia;
     int numPasos;
+    unsigned long* ultimo_Tiempo;
+    const unsigned long* intervalo;
 } Secuencia;
 
 //******************************** LEDS *******************************************
 // Declaración de los LEDs
-LED leds[NUM_LEDS] = {
-    {LED1, LOW},
-    {LED2, LOW},
-    {LED3, LOW},
-    {LED4, LOW}
-};
+int leds[NUM_LEDS] = {LED1, LED2, LED3, LED4};
+int estados_led[NUM_LEDS] = {LOW, LOW, LOW, LOW};
 
 // Secuencia de ejemplo: encender y apagar LEDs en orden
 int secuencia1[LONG_SEC] = {
@@ -46,12 +39,12 @@ int secuencia1[LONG_SEC] = {
     0b0000  // Todos apagados
 };
 
-// Inicialización de la secuencia
-Secuencia secuencia = {leds, NUM_LEDS, secuencia1, LONG_SEC};
-
 // Variables para el retardo no bloqueante
 unsigned long ultimoTiempo = 0;
 const unsigned long intervalo = 1000; // Intervalo de tiempo en milisegundos
+
+// Inicialización de la secuencia
+Secuencia secuencia = {&leds[0],&estados_led[0], NUM_LEDS, &secuencia1[0], LONG_SEC, &ultimoTiempo, &intervalo};
 // **********************************************************************************
 
 //******************************** PULSANTES *******************************************
@@ -60,56 +53,57 @@ typedef struct {
     int* pulsantes_list;
     int* state_list;
     int num_pul;
+    unsigned long* ultimo_Tiempo_Pulsadores;
+    const unsigned long* intervalo_Pulsadores;
 } PULSADORES;
 
 // Declaracion de los pulsantes
 int pulsantes[NUM_PULSANTES] = {SW1,SW2,SW3,SW4};
 int pulsantes_state[NUM_PULSANTES] = {LOW,LOW,LOW,LOW};
-
-// Inicializacion de los pulsantes
-PULSADORES pulsantes_struct = {pulsantes, pulsantes_state, NUM_PULSANTES};
-
 // Variables para el retardo no bloqueante en la lectura de pulsadores
 unsigned long ultimoTiempoPulsadores = 0;
 const unsigned long intervaloPulsadores = 50; // Intervalo de tiempo en milisegundos para el debounce
+
+// Inicializacion de los pulsantes
+PULSADORES pulsantes_struct = {&pulsantes[0], &pulsantes_state[0], NUM_PULSANTES, &ultimoTiempoPulsadores,&intervaloPulsadores};
 //**************************************************************************************
 
-void leerPulsadores(PULSADORES* pulsantes){
+void leerPulsadores(PULSADORES* pulsantes) {
     unsigned long tiempoActual = millis();
-    if (tiempoActual - ultimoTiempoPulsadores >= intervaloPulsadores) {
-        ultimoTiempoPulsadores = tiempoActual;
-        for (int i = 0; i < pulsantes->num_pul; i++) {
-            bool estadoActual = digitalRead(pulsantes->pulsantes_list[i]) == LOW;
+    if (tiempoActual - *(pulsantes->ultimo_Tiempo_Pulsadores) >= *(pulsantes->intervalo_Pulsadores)) {
+        *(pulsantes->ultimo_Tiempo_Pulsadores) = tiempoActual;
 
-            if (estadoActual && !pulsantes->state_list[i]) {
+        for (int i = 0; i < pulsantes->num_pul; i++) {
+            bool estadoActual = digitalRead(*(pulsantes->pulsantes_list + i)) == LOW;
+
+            if (estadoActual && !(*(pulsantes->state_list + i))) {
                 // Si el pulsador se acaba de presionar
-                pulsantes->state_list[i] = true;
+                *(pulsantes->state_list + i) = true;
                 Serial.print("Pulsador ");
                 Serial.print(i + 1);
                 Serial.println(" presionado");
-            } else if (!estadoActual && pulsantes->state_list[i]) {
+            } else if (!estadoActual && (*(pulsantes->state_list + i))) {
                 // Si el pulsador se acaba de soltar
-                pulsantes->state_list[i] = false;
+                *(pulsantes->state_list + i) = false;
             }
         }
     }
-
 }
 
 void ejecutarSecuencia(Secuencia* secuencia) {
     static int pasoActual = 0;
     unsigned long tiempoActual = millis();
     
-    if (tiempoActual - ultimoTiempo >= intervalo) {
-        ultimoTiempo = tiempoActual;
+    if (tiempoActual - *(secuencia->ultimo_Tiempo) >= *(secuencia->intervalo)) {
+        *(secuencia->ultimo_Tiempo) = tiempoActual;
         
         int valorPaso = secuencia->secuencia[pasoActual];
         //Serial.println(valorPaso);
         
         // Actualizar el estado de cada LED según el paso actual
         for (int i = 0; i < secuencia->numLeds; i++) {
-            secuencia->leds[i].estado = (valorPaso & (1 << i)) ? HIGH : LOW;
-            digitalWrite(secuencia->leds[i].pin, secuencia->leds[i].estado);
+            *(secuencia->estados + i) = (valorPaso & (1 << i)) ? HIGH : LOW;
+            digitalWrite(*(secuencia->pins + i), *(secuencia->estados + i));
         }
         
         // Avanzar al siguiente paso
@@ -118,18 +112,18 @@ void ejecutarSecuencia(Secuencia* secuencia) {
 }
 
 void setup() {
-    // Inicialización de los pines de los LEDs
+    // Inicialización de los pines de los LEDs con aritmetica de punteros 
     for (int i = 0; i < secuencia.numLeds; i++) {
-        pinMode(secuencia.leds[i].pin, OUTPUT);
-        digitalWrite(secuencia.leds[i].pin, secuencia.leds[i].estado);
+        pinMode(*(secuencia.pins + i), OUTPUT);
+        digitalWrite(*(secuencia.pins + i), *(secuencia.estados + i));
     }
 
-    // Inicialización de los pines de los LEDs
+    // Inicialización de los pines de los SWs con notacion de [] 
     for (int i = 0; i < pulsantes_struct.num_pul; i++) {
         pinMode(pulsantes_struct.pulsantes_list[i], INPUT_PULLUP);  
     }
     // Iniciando Serial
-    Serial.begin(9600);
+    Serial.begin(115200);
 }
 
 
