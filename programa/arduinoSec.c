@@ -65,23 +65,15 @@ void ejecutarSecuencia(Secuencia* secuencia) {
     
     if (tiempoActual - *(secuencia->ultimo_Tiempo) >= *(secuencia->intervalo)) {
         *(secuencia->ultimo_Tiempo) = tiempoActual;
-        
+     
         int valorPaso = secuencia->secuencia[pasoActual];
 
             // Actualizar el estado de cada LED según el paso actual
             for (int i = 0; i < secuencia->numLeds; i++) {
-
-                if (*(secuencia->sentido_sec)) // Dependiendo el sentido de la secuencia
-                {
-                    *(secuencia->estados + i) = (valorPaso & (1 << i)) ? HIGH : LOW;
-                    digitalWrite(*(secuencia->pins + i), *(secuencia->estados + i));
-                } else{
-                    *(secuencia->estados + (secuencia->numLeds - 1 - i)) = (valorPaso & (1 << i)) ? HIGH : LOW;
-                    digitalWrite(*(secuencia->pins + (secuencia->numLeds - 1 - i)), *(secuencia->estados + (secuencia->numLeds - 1 - i)));
-                }
-                
+                *(secuencia->estados + i) = (valorPaso & (1 << i)) ? HIGH : LOW;
+                digitalWrite(*(secuencia->pins + i), *(secuencia->estados + i));  
             }
         // Avanzar al siguiente paso
-        pasoActual = (pasoActual + 1) % secuencia->numPasos;
+        pasoActual = *(secuencia->sentido_sec) ? (pasoActual < secuencia->numPasos-1 ? pasoActual + 1 : 0) : (pasoActual > 0 ? pasoActual - 1 : secuencia->numPasos-1);
     }
 }
