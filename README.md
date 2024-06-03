@@ -20,8 +20,8 @@ Para instalar la extensión de Arduino en Visual Studio Code, sigue estos pasos:
 4. Haz clic en "Instalar" junto a la extensión de "Arduino" de Microsoft.
 
 
-## Ejecución del Codigo
-# Puertos Arduino
+# Ejecución del Codigo
+## Puertos Arduino
 Para verificar los pines conectados a los leds y los pulsadores se debe
 modificar el archivo `arduinoSec.h`.
  - Las variables LED guardan el pines de los leds.
