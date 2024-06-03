@@ -1,4 +1,4 @@
-## ControlDigital
+# ControlDigital
 Practica 4 Control Digital - Programacion de Microcontroladores en C.
 
 Autores: Dario Portilla y David Montaño
