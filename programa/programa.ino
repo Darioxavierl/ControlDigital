@@ -1,3 +1,10 @@
+/*
+    Solucion a la Practica 4 de Control digital
+    Codigo Realizado por:
+    - David Montaño
+    - Dario Portilla
+*/
+
 #include <Arduino.h>
 #include <stdio.h>
 #include <stdint.h>
