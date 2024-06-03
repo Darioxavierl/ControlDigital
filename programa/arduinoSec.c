@@ -3,6 +3,12 @@
 
 
 void leerPulsadores(PULSADORES* pulsantes) {
+    /*
+    La funcion recorre la lista de los pulsadores cambiando el estado en la lista de estados
+    si algun pulsador registra ser presionado, es decir guarda el valor de true, caso contrario
+    registra el valor de false
+    */
+
     unsigned long tiempoActual = millis();
     if (tiempoActual - *(pulsantes->ultimo_Tiempo_Pulsadores) >= *(pulsantes->intervalo_Pulsadores)) {
         *(pulsantes->ultimo_Tiempo_Pulsadores) = tiempoActual;
@@ -25,6 +31,11 @@ void leerPulsadores(PULSADORES* pulsantes) {
 }
 
 void funcionPulsadores(AccionPul* accion_struct){
+    /*
+    La funcion recorre la lista de estados de los pulsadores ejecutando alguna accion si
+    algun pulsador registra ser ejecutado, es decir tiene guardado en la lista de estados
+    el valor de true
+    */
     unsigned long tiempoActual = millis();
 
     if (tiempoActual - *(accion_struct->ultimo_Tiempo_Accion) >= *(accion_struct->intervalo_Accion))
@@ -60,6 +71,9 @@ void funcionPulsadores(AccionPul* accion_struct){
 }
 
 void ejecutarSecuencia(Secuencia* secuencia) {
+    /*
+    La funcion recorre ejecuta la secuencia dependiendo el sentido de la misma
+    */
     static int pasoActual = 0;
     unsigned long tiempoActual = millis();
     

@@ -5,7 +5,7 @@ Autores: Dario Portilla y David Montaño
 
 Implementar una secuencia de encendido de LEDs utilizando un microcontrolador.
 
-## Prerequisitos
+## Prerrequisitos
 1. Visual Studio Code.
 2. Extension de Arduino para Visual.
 
@@ -24,7 +24,7 @@ Para instalar la extensión de Arduino en Visual Studio Code, sigue estos pasos:
 # Puertos Arduino
 Para verificar los pines conectados a los leds y los pulsadores se debe
 modificar el archivo `arduinoSec.h`.
- - Las variables LED guardan el pines de los leda.
+ - Las variables LED guardan el pines de los leds.
  - Las variables SW guardan los pines de los pulsadores.
 
 

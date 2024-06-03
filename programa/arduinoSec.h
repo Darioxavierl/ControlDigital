@@ -10,14 +10,14 @@
 //************* Definicion de pines del Arduino************************
 //*********************************************************************
 
-#define LED1 2 // Define el pin del LED
-#define LED2 3 // Define el pin del LED
-#define LED3 4 // Define el pin del LED
-#define LED4 5 // Define el pin del LED
-#define SW1 8 // Define pin del pulsante 1
-#define SW2 9 // Define pin del pulsante 2
-#define SW3 10 // Define pin del pulsante 3
-#define SW4 11 // Define pin del pulsante 4
+#define LED1 2 // Define el pin del LED 1
+#define LED2 3 // Define el pin del LED 2
+#define LED3 4 // Define el pin del LED 3
+#define LED4 5 // Define el pin del LED 4
+#define SW1 8 // Define pin del pulsante 1 - pulsador de 200ms
+#define SW2 9 // Define pin del pulsante 2 - pulsador de 750ms
+#define SW3 10 // Define pin del pulsante 3 - pulsador de sentido descendente
+#define SW4 11 // Define pin del pulsante 4 - pulsador de sentido ascendente
 
 //*********************************************************************
 
@@ -25,9 +25,9 @@
 //********* Definicion de cantidad de elementos************************
 //*********************************************************************
 
-#define NUM_LEDS 4
-#define LONG_SEC 5
-#define NUM_PULSANTES 4
+#define NUM_LEDS 4 // Numero de leds conectados
+#define LONG_SEC 5 // Longitud de la secuencia a ejecutar
+#define NUM_PULSANTES 4 // Numero de pulsantes conectados
 
 //*********************************************************************
 
